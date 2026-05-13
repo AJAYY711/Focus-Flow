@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": "g_1778585155557",
+      "name": "Google Explorer 332",
+      "email": "explorer332@gmail.com",
+      "password": "SOCIAL_LOGIN_SECURE",
+      "createdAt": "2026-05-12T11:25:55.557Z"
+    },
+    {
+      "id": "g_1778585572769",
+      "name": "Google Explorer 173",
+      "email": "explorer173@gmail.com",
+      "password": "SOCIAL_LOGIN_SECURE",
+      "createdAt": "2026-05-12T11:32:52.769Z"
+    },
+    {
+      "id": "1778649206771",
+      "name": "Levi",
+      "email": "ajaysaik144@gmail.com",
+      "password": "$2b$10$fWdkZAIDB9mWmGe6PE.yCuvkzjZEg0INhYJLTy9K4bhdC810sCRCG",
+      "createdAt": "2026-05-13T05:13:26.771Z"
+    },
+    {
+      "id": "g_1778650010783",
+      "name": "Google Explorer 883",
+      "email": "explorer883@gmail.com",
+      "password": "SOCIAL_LOGIN_SECURE",
+      "createdAt": "2026-05-13T05:26:50.783Z"
+    },
+    {
+      "id": "g_1778650080931",
+      "name": "Google Explorer 247",
+      "email": "explorer247@gmail.com",
+      "password": "SOCIAL_LOGIN_SECURE",
+      "createdAt": "2026-05-13T05:28:00.931Z"
+    }
+  ]
+}
