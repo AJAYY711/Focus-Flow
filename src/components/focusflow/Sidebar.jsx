@@ -13,6 +13,8 @@ import {
   Lightbulb,
   Settings,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Logo } from "./Logo";
 
@@ -31,12 +33,15 @@ const items = [
 ];
 
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useState } from "react";
 import { LogoutModal } from "../auth/LogoutModal";
+import { motion } from "framer-motion";
 
 export function Sidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [logoutOpen, setLogoutOpen] = useState(false);
 
   const initials = user?.name ? user.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) : "U";
@@ -95,6 +100,19 @@ export function Sidebar() {
           </nav>
 
           <div className="mt-3 pt-3 border-t border-border space-y-0.5">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-black/5 transition text-left cursor-pointer"
+            >
+              <motion.div
+                animate={{ rotate: theme === 'dark' ? 180 : 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {theme === 'dark' ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+              </motion.div>
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            </button>
             <Link
               to="/dashboard/settings"
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-black/5 transition"

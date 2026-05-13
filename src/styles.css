@@ -102,6 +102,69 @@
 }
 
 
+.dark {
+  --background: oklch(0.13 0.02 275);
+  --foreground: oklch(0.93 0.01 270);
+
+  --card: oklch(0.16 0.02 275);
+  --card-foreground: oklch(0.93 0.01 270);
+
+  --popover: oklch(0.16 0.02 275);
+  --popover-foreground: oklch(0.93 0.01 270);
+
+  --primary: oklch(0.7 0.2 285);
+  --primary-foreground: oklch(0.13 0.02 275);
+
+  --secondary: oklch(0.2 0.02 275);
+  --secondary-foreground: oklch(0.93 0.01 270);
+
+  --muted: oklch(0.2 0.02 275);
+  --muted-foreground: oklch(0.6 0.02 275);
+
+  --accent: oklch(0.22 0.03 285);
+  --accent-foreground: oklch(0.93 0.01 270);
+
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.93 0.01 270);
+
+  --border: oklch(0.93 0.01 270 / 10%);
+  --input: oklch(0.93 0.01 270 / 12%);
+  --ring: oklch(0.7 0.2 285);
+
+  --glass: oklch(0.16 0.02 275 / 60%);
+
+  --gradient-mesh: radial-gradient(at 20% 20%, oklch(0.65 0.2 295 / 0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, oklch(0.62 0.18 250 / 0.05) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, oklch(0.7 0.2 350 / 0.04) 0px, transparent 50%),
+    radial-gradient(at 0% 90%, oklch(0.75 0.12 200 / 0.04) 0px, transparent 50%);
+
+  --shadow-elegant: 0 20px 60px -15px oklch(0 0 0 / 0.3), 0 0 0 1px oklch(1 0 0 / 0.04);
+}
+
+.dark .glass {
+  background: linear-gradient(135deg, oklch(0.18 0.02 275 / 0.7), oklch(0.14 0.02 275 / 0.4));
+  border-color: oklch(1 0 0 / 0.06);
+  box-shadow: 0 4px 24px -8px oklch(0 0 0 / 0.2);
+}
+
+.dark .glass-strong {
+  background: linear-gradient(135deg, oklch(0.18 0.02 275 / 0.85), oklch(0.14 0.02 275 / 0.7));
+  border-color: oklch(1 0 0 / 0.08);
+}
+
+.dark ::selection {
+  background: oklch(0.65 0.2 295 / 0.3);
+  color: oklch(0.95 0 0);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(1 0 0 / 0.12);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(1 0 0 / 0.2);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

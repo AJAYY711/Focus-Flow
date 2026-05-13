@@ -121,18 +121,24 @@ function RootShell({ children }) {
 
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../context/AuthContext";
+import { TaskProvider } from "../context/TaskContext";
+import { ThemeProvider } from "../context/ThemeContext";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <StartupLoader />
-        <Outlet />
-        <Toaster position="top-right" />
-      </QueryClientProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TaskProvider>
+          <QueryClientProvider client={queryClient}>
+            <StartupLoader />
+            <Outlet />
+            <Toaster position="top-right" />
+          </QueryClientProvider>
+        </TaskProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

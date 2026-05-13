@@ -13,8 +13,12 @@ import {
   Trophy,
   Sparkles,
   MoreHorizontal,
+  CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
+import { useTasks } from "@/context/TaskContext";
+import { Link } from "@tanstack/react-router";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
@@ -55,6 +59,15 @@ export function GlassCard({ children, className = "", glow = false, delay = 0 })
 }
 
 export function GreetingCard() {
+  const { user } = useAuth();
+  const { stats } = useTasks();
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+  const dayStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const firstName = user?.name?.split(" ")[0] || "User";
+  const pending = stats?.pending || 0;
+
   return (
     <motion.div
       variants={cardVariants}
@@ -76,30 +89,39 @@ export function GreetingCard() {
           transition={{ delay: 0.3 }}
           className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3"
         >
-          Tuesday · May 11, 2026
+          {dayStr}
         </motion.p>
         <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">
-          Good Evening, <span className="text-gradient">Ajay</span> 👋
+          {greeting}, <span className="text-gradient">{firstName}</span> 👋
         </h2>
         <p className="text-muted-foreground mt-3 max-w-xl">
-          You're <span className="text-foreground font-medium">3 tasks</span> away from a perfect
-          day. Your focus score is at an all-time high.
+          {pending > 0 ? (
+            <>You're <span className="text-foreground font-medium">{pending} task{pending !== 1 ? 's' : ''}</span> away from a perfect day.</>
+          ) : stats?.total > 0 ? (
+            <>All tasks done! You've earned a break. 🎉</>
+          ) : (
+            <>Start your productivity journey by adding your first task.</>
+          )}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-aurora text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-medium glow-ring transition flex items-center gap-2 cursor-pointer"
-          >
-            <Play className="h-4 w-4" /> Start Focus Session
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.03, borderColor: "var(--color-primary)" }}
-            whileTap={{ scale: 0.97 }}
-            className="glass px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer"
-          >
-            <Plus className="h-4 w-4" /> Add Task
-          </motion.button>
+          <Link to="/dashboard/focus">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="bg-aurora text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-medium glow-ring transition flex items-center gap-2 cursor-pointer"
+            >
+              <Play className="h-4 w-4" /> Start Focus Session
+            </motion.button>
+          </Link>
+          <Link to="/dashboard/tasks">
+            <motion.button
+              whileHover={{ scale: 1.03, borderColor: "var(--color-primary)" }}
+              whileTap={{ scale: 0.97 }}
+              className="glass px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer"
+            >
+              <Plus className="h-4 w-4" /> Add Task
+            </motion.button>
+          </Link>
         </div>
       </div>
     </motion.div>
@@ -192,6 +214,12 @@ function Ring({ value, size = 130, color = "url(#auroraGrad)" }) {
 
 
 export function ProductivityScore() {
+  const { stats } = useTasks();
+  const score = stats?.productivity || 0;
+  const completed = stats?.completed || 0;
+  const total = stats?.total || 0;
+  const streak = stats?.streak || 0;
+
   return (
     <motion.div
       variants={cardVariants}
@@ -207,18 +235,20 @@ export function ProductivityScore() {
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Productivity</p>
           <h3 className="font-display text-lg mt-1">Today's Score</h3>
         </div>
-        <motion.span
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md"
-        >
-          <TrendingUp className="h-3 w-3" /> +12%
-        </motion.span>
+        {score >= 50 && (
+          <motion.span
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md"
+          >
+            <TrendingUp className="h-3 w-3" /> {score}%
+          </motion.span>
+        )}
       </div>
       <div className="flex items-center gap-5 mt-4">
         <div className="relative grid place-items-center">
-          <Ring value={87} />
+          <Ring value={score} />
           <div className="absolute inset-0 grid place-items-center">
             <div className="text-center">
               <motion.p
@@ -227,18 +257,18 @@ export function ProductivityScore() {
                 transition={{ delay: 1, duration: 0.8 }}
                 className="font-display text-3xl font-semibold tabular-nums"
               >
-                87
+                {score}
               </motion.p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Score</p>
             </div>
           </div>
         </div>
         <div className="space-y-3 flex-1">
-          <Stat label="Tasks done" value="14/17" />
-          <Stat label="Deep work" value="3h 42m" />
+          <Stat label="Tasks done" value={`${completed}/${total}`} />
+          <Stat label="Today" value={`${stats?.todayCompleted || 0}/${stats?.todayTotal || 0}`} />
           <Stat
             label="Streak"
-            value="47 days"
+            value={`${streak} day${streak !== 1 ? 's' : ''}`}
             icon={<Flame className="h-3 w-3 text-orange-400" />}
           />
         </div>
@@ -375,45 +405,13 @@ export function PomodoroCard() {
 }
 
 
-const tasks = [
-  {
-    title: "Ship FocusFlow v2 design system",
-    project: "Design",
-    priority: "high",
-    done: true,
-    time: "9:00",
-  },
-  {
-    title: "Review Q2 product roadmap",
-    project: "Strategy",
-    priority: "high",
-    done: false,
-    time: "11:30",
-  },
-  {
-    title: "Sync with engineering pod",
-    project: "Team",
-    priority: "med",
-    done: false,
-    time: "14:00",
-  },
-  {
-    title: "Write release notes",
-    project: "Marketing",
-    priority: "low",
-    done: false,
-    time: "16:30",
-  },
-  {
-    title: "Meditation & journal",
-    project: "Wellness",
-    priority: "low",
-    done: true,
-    time: "18:00",
-  },
-];
-
 export function TasksWidget() {
+  const { tasks, loading } = useTasks();
+  // Show today's tasks (first 5)
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayTasks = tasks.filter(t => t.date === todayStr).slice(0, 5);
+  const displayTasks = todayTasks.length > 0 ? todayTasks : tasks.slice(0, 5);
+
   return (
     <motion.div
       variants={cardVariants}
@@ -429,65 +427,74 @@ export function TasksWidget() {
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Today</p>
           <h3 className="font-display text-lg mt-1">Priority Tasks</h3>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="glass px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 hover:border-primary/30 transition cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" /> Add
-        </motion.button>
-      </div>
-      <ul className="space-y-2">
-        {tasks.map((t, i) => (
-          <motion.li
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 + i * 0.05 }}
-            whileHover={{ x: 4, backgroundColor: "rgba(0,0,0,0.02)" }}
-            className="group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors"
+        <Link to="/dashboard/tasks">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="glass px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 hover:border-primary/30 transition cursor-pointer"
           >
-            <div
-              className={`h-5 w-5 rounded-md border grid place-items-center transition ${t.done ? "bg-aurora border-transparent" : "border-border group-hover:border-neon-violet"}`}
+            <Plus className="h-3.5 w-3.5" /> Add
+          </motion.button>
+        </Link>
+      </div>
+      {displayTasks.length === 0 ? (
+        <div className="text-center py-6">
+          <p className="text-3xl mb-2">📝</p>
+          <p className="text-sm text-muted-foreground">No tasks yet. Create one to get started!</p>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {displayTasks.map((t, i) => (
+            <motion.li
+              key={t.id || i}
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 + i * 0.05 }}
+              whileHover={{ x: 4, backgroundColor: "rgba(0,0,0,0.02)" }}
+              className="group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors"
             >
-              {t.done && (
-                <motion.svg
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  viewBox="0 0 24 24"
-                  className="h-3 w-3 text-primary-foreground"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </motion.svg>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p
-                className={`text-sm font-medium truncate ${t.done ? "line-through text-muted-foreground" : ""}`}
+              <div
+                className={`h-5 w-5 rounded-md border grid place-items-center transition ${t.completed ? "bg-aurora border-transparent" : "border-border group-hover:border-neon-violet"}`}
               >
-                {t.title}
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                {t.project} · {t.time}
-              </p>
-            </div>
-            <span
-              className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-md font-semibold ${
-                t.priority === "high"
-                  ? "bg-neon-pink/15 text-neon-pink"
-                  : t.priority === "med"
-                    ? "bg-neon-cyan/15 text-neon-cyan"
-                    : "bg-muted text-muted-foreground"
-              }`}
-            >
-              {t.priority}
-            </span>
-          </motion.li>
-        ))}
-      </ul>
+                {t.completed && (
+                  <motion.svg
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    viewBox="0 0 24 24"
+                    className="h-3 w-3 text-primary-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </motion.svg>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm font-medium truncate ${t.completed ? "line-through text-muted-foreground" : ""}`}
+                >
+                  {t.title}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {t.time ? `${t.time}` : t.date}
+                </p>
+              </div>
+              <span
+                className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-md font-semibold ${
+                  t.priority === "high"
+                    ? "bg-neon-pink/15 text-neon-pink"
+                    : t.priority === "medium"
+                      ? "bg-neon-cyan/15 text-neon-cyan"
+                      : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {t.priority}
+              </span>
+            </motion.li>
+          ))}
+        </ul>
+      )}
     </motion.div>
   );
 }
